@@ -29,7 +29,7 @@ with st.sidebar:
     menu = st.radio("SOMMAIRE",
                     ('Projet', 'Dataset', 'Analyse exploratoire',
                      'Etude des corrélations', 'Etude de la consommation',
-                     'Prédiction de la consommation', 'Conclusion')
+                     'Prédiction de la consommation')
                     )
 
     st.markdown(''' *Auteur* : 
@@ -243,15 +243,14 @@ l’**Auvergne-Rhône-Alpes**, **Grand-Est**, **Normandie** et \
 elif menu == 'Etude des corrélations':
     dg = pd.read_csv("ST_Conso_temp.csv")
 
-    plt.figure(figsize =(7,10))
-    sns.lineplot(x='TMoy (°C)', y='Consommation (MW)', ci = None, hue = 'Région' , data=dg);
-    st.pyplot()
-    dictionnaire = {'Consommation (MW)': 'Conso'}
-    dg = dg.rename(dictionnaire, axis = 1)
+    T = px.line(dg, x='TMoy (°C)', y='Consommation (MW)', 
+                  color='Région', width=800, height=800)
+    st.plotly_chart(T)
+    
     st.markdown("#### Corrélation entre la température et la consommation d'énergie en France")
-    dg_F = dg.groupby([ 'Date']).agg({'Conso': 'sum','TMoy (°C)' : 'mean'})
-    plt.figure(figsize=(2, 2))
-    sns.heatmap(dg_F.corr() ,annot = True , cmap = 'RdBu_r' , center = 0  )
+    dg_F = dg.groupby([ 'Date']).agg({'Consommation (MW)': 'sum','TMoy (°C)' : 'mean'})
+    corr = dg_F.corr()
+    sns.heatmap(corr,annot = True , cmap = "viridis", center = 0)
     st.pyplot()
     
     if st.checkbox("Afficher jeu de données"):
@@ -297,7 +296,7 @@ elif menu == 'Etude des corrélations':
             df = dg_PdL
         return(df)
         
-    plt.figure(figsize=(2, 2))
+    
     sns.heatmap(correlation(Choix_région).corr() ,annot = True , cmap = 'RdBu_r' , center = 0  )
     st.pyplot()
     st.set_option('deprecation.showPyplotGlobalUse', False)
