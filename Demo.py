@@ -250,8 +250,9 @@ elif menu == 'Etude des corrélations':
     st.markdown("#### Corrélation entre la température et la consommation d'énergie en France")
     dg_F = dg.groupby([ 'Date']).agg({'Consommation (MW)': 'sum','TMoy (°C)' : 'mean'})
     corr = dg_F.corr()
+    fig, ax = plt.subplots(figsize =(5,4))
     sns.heatmap(corr,annot = True , cmap = "viridis", center = 0)
-    st.pyplot()
+    st.pyplot(fig)
     
     if st.checkbox("Afficher jeu de données"):
         st.dataframe(dg)
@@ -297,8 +298,12 @@ elif menu == 'Etude des corrélations':
         return(df)
         
     
-    sns.heatmap(correlation(Choix_région).corr() ,annot = True , cmap = 'RdBu_r' , center = 0  )
-    st.pyplot()
+    grid_kws = {"height_ratios": (.9, .05), "hspace": .3}
+    f, (ax, cbar_ax) = plt.subplots(2,figsize=(5,4), gridspec_kw=grid_kws)
+    ax = sns.heatmap(correlation(Choix_région).corr() ,annot = True , 
+                cmap = "viridis", center = 0,ax=ax, vmin = -0.85,
+                cbar_ax=cbar_ax, cbar_kws={"orientation": "horizontal"})
+    st.pyplot(f)
     st.set_option('deprecation.showPyplotGlobalUse', False)
     
     st.title('Régression Linéaire') 
